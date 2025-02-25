@@ -1,26 +1,35 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+# Learn about building .NET container images:
+# https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+ARG TARGETARCH
+WORKDIR /source
+
+# Copy project file and restore as distinct layers
+COPY --link *.csproj .
+RUN ls -l /source # Add this line for debugging
+RUN dotnet restore -a $TARGETARCH
+
+# Copy source code and publish app
+COPY --link . .
+RUN dotnet publish -a $TARGETARCH -o /app
+
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine 
+WORKDIR /appS
+COPY --link --from=build /app .
 USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+ENTRYPOINT ["./MicroserviceApiTemplate"]
 
-# Cette phase est utilisée pour générer le projet de service
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["MicroserviceApiTemplate/MicroserviceApiTemplate.csproj", "MicroserviceApiTemplate/"]
-RUN dotnet restore "./MicroserviceApiTemplate/MicroserviceApiTemplate.csproj"
-COPY . .
-WORKDIR "/src/MicroserviceApiTemplate"
-RUN dotnet build "./MicroserviceApiTemplate.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Cette étape permet de publier le projet de service à copier dans la phase finale
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./MicroserviceApiTemplate.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# COMMANDE 
+# docker run --rm -it -p 8000:8081 -e ASPNETCORE_HTTP_PORTS=8081 app:v1.0
+# dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p password   
+#                  dotnet dev-certs https --trust
+# Dans votre Home directory copié .aspnet et placer le repertoire dans le projet
+# Build: docker build -t app:v1.0 .
+# Start : "docker run --rm -it -p 8000:8080 -e ASPNETCORE_HTTP_PORTS=8080 app:v1.0"
+#   docker run --rm -it -p 8000:80 -p 8001:443 -e ASPNETCORE_URLS="https://+;http://+" -e ASPNETCORE_HTTPS_PORTS=8001 -e ASPNETCORE_Kestrel__Certificates__Default__Password="password" -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx -v ${HOME}\.aspnet\https:/https/ app:v1.0
+# Comme on veut afficher le swagger, il faut definir que l'on est en environnement de dev donc il faut rajouter: -e ASPNETCORE_ENVIRONMENT=Development
 
-# Cette phase est utilisée en production ou lors de l’exécution à partir de VS en mode normal (par défaut quand la configuration de débogage n’est pas utilisée)
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "MicroserviceApiTemplate.dll"]
+

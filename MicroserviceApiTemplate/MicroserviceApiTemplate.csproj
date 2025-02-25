@@ -11,6 +11,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
 	  <ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
 	  <DockerfileFile>Dockerfile</DockerfileFile>
+	  <DockerfileRunArguments>-p 8000:8080 -e ASPNETCORE_HTTP_PORTS=8080</DockerfileRunArguments>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

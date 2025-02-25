@@ -39,6 +39,15 @@
       "publishAllPorts": true,
       "useSSL": true,
       "containerName": ""
+    },
+    "Container (Release Mode)": {
+      "commandName": "Docker",
+      "commandLineArgs": "-p 8000:8080 -e ASPNETCORE_HTTP_PORTS=8080",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "publishAllPorts": true,
+      "useSSL": true,
+      "containerName": ""
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
