@@ -1,0 +1,58 @@
+# Guide d'utilisation du Dockerfile pour une application .NET
+
+## Introduction
+Ce projet contient un `Dockerfile` permettant de construire et exécuter une application .NET dans un conteneur. 
+
+Le fichier est conçu pour :
+- Construire une image .NET 8.0 sur Alpine Linux.
+- Séparer les étapes de build et d'exécution pour optimiser la taille de l'image.
+- Gérer les modes HTTP et HTTPS correctement.
+
+## Construire et Exécuter l'Image
+
+### Étapes de Build
+
+1. **Construire l'image Docker**
+   ```sh
+   docker build -t app:v1.0 .
+   ```
+2. **Exécuter le conteneur en mode HTTP**
+   ```sh
+   docker run --rm -it -p 8000:8081 -e ASPNETCORE_HTTP_PORTS=8081 app:v1.0
+   ```
+3. **Configurer HTTPS** (facultatif)
+   ```sh
+   dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p password
+   dotnet dev-certs https --trust
+   ```
+   - Placez le répertoire `.aspnet` dans votre projet.
+
+4. **Exécuter en mode HTTPS**
+   ```sh
+   docker run --rm -it -p 8000:80 -p 8001:443 \  
+      -e ASPNETCORE_URLS="https://+;http://+" \  
+      -e ASPNETCORE_HTTPS_PORTS=8001 \  
+      -e ASPNETCORE_Kestrel__Certificates__Default__Password="password" \  
+      -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx \  
+      -v ${HOME}/.aspnet/https:/https/ app:v1.0
+   ```
+
+5. **Activer Swagger en mode développement**
+   ```sh
+   -e ASPNETCORE_ENVIRONMENT=Development
+   ```
+
+## Débogage avec Visual Studio
+
+Visual Studio utilise ce `Dockerfile` pour générer les images de conteneur, ce qui accélère le débogage. 
+Pour plus d'informations sur la personnalisation du conteneur de débogage, consultez la documentation officielle :
+[Personnalisation des conteneurs pour le débogage](https://aka.ms/customizecontainer).
+
+## Liens Utiles
+
+- [Construction d'images de conteneurs avec Visual Studio](https://learn.microsoft.com/fr-fr/visualstudio/containers/container-build?view=vs-2022)
+- [Exemples d'images Docker .NET](https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md)
+- [Sécurisation HTTPS dans les conteneurs ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-9.0)
+
+## Licence
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
