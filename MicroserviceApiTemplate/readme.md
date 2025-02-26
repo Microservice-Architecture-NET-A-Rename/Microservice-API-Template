@@ -29,14 +29,13 @@ Le fichier est conçu pour :
 
 4. **Exécuter en mode HTTPS**
    ```sh
-   docker run --rm -it -p 8000:80 -p 8001:443 \  
-      -e ASPNETCORE_URLS="https://+;http://+" \  
-      -e ASPNETCORE_HTTPS_PORTS=8001 \  
+   docker run --rm -it -p 8000:8081 \  
+      -e ASPNETCORE_HTTPS_PORTS=8081 \  
       -e ASPNETCORE_Kestrel__Certificates__Default__Password="password" \  
       -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx \  
-      -v ${HOME}/.aspnet/https:/https/ app:v1.0
+      -v ${HOME}\.aspnet\https:/https/ app:v1.0
    ```
-
+   
 5. **Activer Swagger en mode développement**
    ```sh
    -e ASPNETCORE_ENVIRONMENT=Development
