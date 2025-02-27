@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "François-Pierre Rousseau",
+  "classifications": [ "MicroService", "Web", "API", "ASP.NET Core" ],
+  "identity": "MicroService.API",
+  "name": "Microservice API",
+  "shortName": "microsapi",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "constraints": {
+    "sdk-version": {
+      "type": "sdk-version",
+      "args": "8.0.*"
+    },
+    "os": {
+      "type": "os",
+      "args": ["Linux", "Windows", "OSX"]
+    }
+  }
+}
