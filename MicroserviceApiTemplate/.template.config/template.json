@@ -9,14 +9,19 @@
     "language": "C#",
     "type": "project"
   },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [ ".gitignore" ]
+        }
+      ]
+    }
+  ],
   "constraints": {
     "sdk-version": {
       "type": "sdk-version",
-      "args": "8.0.*"
-    },
-    "os": {
-      "type": "os",
-      "args": ["Linux", "Windows", "OSX"]
+      "args": "9.0.*"
     }
   }
 }
