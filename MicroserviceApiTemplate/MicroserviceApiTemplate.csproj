@@ -12,6 +12,10 @@
 	  <ContainerDevelopmentMode>Fast</ContainerDevelopmentMode>
 	  <DockerfileFile>Dockerfile.debug</DockerfileFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include=".template.config\template.json" />
+  </ItemGroup>
 	
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11" />

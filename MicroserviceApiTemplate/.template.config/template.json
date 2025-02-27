@@ -5,19 +5,12 @@
   "identity": "MicroService.API",
   "name": "Microservice API",
   "shortName": "microsapi",
+  "preferNameDirectory": true,
+  "sourceName": "MicroserviceApiTemplate",
   "tags": {
     "language": "C#",
     "type": "project"
   },
-  "sources": [
-    {
-      "modifiers": [
-        {
-          "exclude": [ ".gitignore" ]
-        }
-      ]
-    }
-  ],
   "constraints": {
     "sdk-version": {
       "type": "sdk-version",
