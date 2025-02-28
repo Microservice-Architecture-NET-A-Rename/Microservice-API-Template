@@ -1,9 +1,10 @@
 # Guide d'utilisation du Dockerfile et du Template .NET pour une application .NET
 
 ## Introduction
-Ce projet contient :
+Ce projet a pour objectif de fournir un modèle de projet .NET Web API entièrement configuré pour être exécuté dans un conteneur Docker avec le débogage préintégré. Il inclut :
 - Un `Dockerfile` permettant de construire et exécuter une application .NET dans un conteneur.
 - Un fichier `template.json` permettant de créer un modèle de projet .NET personnalisé.
+- Une configuration facilitant l'intégration avec Visual Studio pour un débogage efficace.
 
 
 ## Dockerfile : Construire et Exécuter l'Image

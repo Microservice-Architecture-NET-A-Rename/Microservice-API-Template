@@ -1,6 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/template",
-  "author": "François-Pierre Rousseau",
+  "author": "Franï¿½ois-Pierre Rousseau",
   "classifications": [ "MicroService", "Web", "API", "ASP.NET Core" ],
   "identity": "MicroService.API",
   "name": "Microservice API",
