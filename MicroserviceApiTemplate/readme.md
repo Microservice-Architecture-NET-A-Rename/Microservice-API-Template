@@ -17,7 +17,7 @@ Ce projet fournit un modèle de projet .NET Web API préconfiguré pour l'exécution
 1. **Construire l'image Docker**
 
    ```sh
-   docker build -t app:v1.0 -f Dockerfile ./MicroserviceApiTemplate
+   docker build -t app:v1.0 -f ./MicroserviceApiTemplate/Dockerfile .
    ```
 
 2. **Exécuter le conteneur en mode HTTP**
@@ -32,8 +32,6 @@ Ce projet fournit un modèle de projet .NET Web API préconfiguré pour l'exécution
    dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p password
    dotnet dev-certs https --trust
    ```
-
-   - Placez le répertoire `.aspnet` dans votre projet.
 
 4. **Exécuter en mode HTTPS**
 
