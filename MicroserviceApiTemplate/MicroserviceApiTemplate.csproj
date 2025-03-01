@@ -15,7 +15,7 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
 	  <ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
-	  <DockerfileFile>Dockerfile</DockerfileFile>
+	  <DockerfileRunArguments>-p 8000:8081</DockerfileRunArguments>
   </PropertyGroup>
 
   <ItemGroup>
