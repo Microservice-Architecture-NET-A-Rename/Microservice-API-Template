@@ -11,6 +11,12 @@
     "language": "C#",
     "type": "project"
   },
+  "sources": [
+    {
+      "source": "./",
+      "exclude": [ "docs/**" ]
+    }
+  ],
   "constraints": {
     "sdk-version": {
       "type": "sdk-version",
