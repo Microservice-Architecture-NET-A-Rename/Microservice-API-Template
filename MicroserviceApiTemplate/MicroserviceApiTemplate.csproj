@@ -24,7 +24,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <None Include=".github\docker.registry.push.yml" />
+    <None Include=".github\workflows\docker-image.yml" />
   </ItemGroup>
 
 </Project>
