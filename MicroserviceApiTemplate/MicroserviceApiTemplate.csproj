@@ -14,6 +14,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove=".github\**" />
+    <Content Remove=".github\**" />
+    <EmbeddedResource Remove=".github\**" />
+    <None Remove=".github\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include=".template.config\template.json" />
   </ItemGroup>
 	
@@ -21,10 +28,6 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-	
-  <ItemGroup>
-    <None Include=".github\workflows\docker-image.yml" />
   </ItemGroup>
 
 </Project>
