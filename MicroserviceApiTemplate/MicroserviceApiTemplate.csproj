@@ -13,6 +13,11 @@
 	  <DockerfileFile>Dockerfile.debug</DockerfileFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+	  <ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
+	  <DockerfileFile>Dockerfile</DockerfileFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove=".github\**" />
     <Content Remove=".github\**" />

@@ -2,15 +2,14 @@
 # https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 ARG TARGETARCH
-RUN echo "Architecture cible : ${TARGETARCH}"
 WORKDIR /source
 
 # Copy project file and restore as distinct layers
-COPY --link *.csproj .
+COPY --link ./MicroserviceApiTemplate/*.csproj .
 RUN dotnet restore -a $TARGETARCH
 
 # Copy source code and publish app
-COPY --link . .
+COPY --link ./MicroserviceApiTemplate/. .
 RUN dotnet publish -a $TARGETARCH -o /app
 
 

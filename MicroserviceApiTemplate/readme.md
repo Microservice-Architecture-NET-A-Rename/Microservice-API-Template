@@ -13,7 +13,7 @@ Ce projet a pour objectif de fournir un modèle de projet .NET Web API entièremen
 
 1. **Construire l'image Docker**
    ```sh
-   docker build -t app:v1.0 .
+   docker build -t app:v1.0 -f Dockerfile ./MicroserviceApiTemplate
    ```
 2. **Exécuter le conteneur en mode HTTP**
    ```sh
