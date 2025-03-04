@@ -68,6 +68,7 @@ jobs:
           npx semantic-release --dry-run --no-ci --generate-notes-only \
             --plugins @semantic-release/release-notes-generator \
             --from $FROM \
+            --branches main,next,beta \
             --to ${LATEST_TAG:-HEAD} \
             > release_notes.md
 
