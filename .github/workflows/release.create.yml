@@ -17,6 +17,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install @semantic-release/changelog @semantic-release/git conventional-changelog-cli
+
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          npx semantic-release --dry-run --plugins @semantic-release/release-notes-generator > release_notes.md
+          echo "RELEASE_NOTES=$(cat release_notes.md)" >> $GITHUB_OUTPUT
+
       - name: Get tag
         id: tag
         run: |
@@ -27,9 +41,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
+          body_path: release_notes.md
           tag_name: ${{ steps.tag.outputs.TAG }}
           name: Release ${{ steps.tag.outputs.TAG }}
-          draft: false
+          draft: true
           prerelease: false
           generate_release_notes: true
         env:
