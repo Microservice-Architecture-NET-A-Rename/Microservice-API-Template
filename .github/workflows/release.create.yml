@@ -28,7 +28,7 @@ jobs:
       - name: Generate Release Notes
         id: release_notes
         run: |
-            npx semantic-release --dry-run --no-ci  --plugins @semantic-release/release-notes-generator --branches main,next,beta > release_notes.md
+            npx semantic-release --dry-run --no-ci --generate-notes-only --plugins @semantic-release/release-notes-generator --branches main,next,beta > release_notes.md
 
       - name: Get tag
         id: tag
