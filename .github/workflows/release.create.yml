@@ -28,17 +28,29 @@ jobs:
       - name: Generate Release Notes
         id: release_notes
         run: |
-            # Obtenir les deux derniers tags
-            LATEST_TAG=$(git describe --tags --abbrev=0)
-            PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${LATEST_TAG}^)
-    
-            # Générer les notes de version entre ces deux tags
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
+
+            if [ -z "$LATEST_TAG" ]; then
+              # Aucun tag n'existe, utiliser le premier commit
+              FROM=$(git rev-list --max-parents=0 HEAD)
+            else
+              # Au moins un tag existe
+              PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${LATEST_TAG}^ 2>/dev/null)
+              if [ -z "$PREVIOUS_TAG" ]; then
+                # Seulement un tag existe, utiliser le premier commit
+                FROM=$(git rev-list --max-parents=0 HEAD)
+              else
+                FROM=$PREVIOUS_TAG
+              fi
+            fi
+            
+            # Générer les notes de version
             npx semantic-release --dry-run --no-ci --generate-notes-only \
               --plugins @semantic-release/release-notes-generator \
-              --from $PREVIOUS_TAG \
-              --to $LATEST_TAG \
+              --from $FROM \
+              --to ${LATEST_TAG:-HEAD} \
               > release_notes.md
-    
+            
             echo "RELEASE_NOTES=$(cat release_notes.md)" >> $GITHUB_OUTPUT
 
 
