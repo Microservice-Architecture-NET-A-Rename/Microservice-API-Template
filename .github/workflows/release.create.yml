@@ -28,8 +28,7 @@ jobs:
       - name: Generate Release Notes
         id: release_notes
         run: |
-          npx semantic-release --dry-run --plugins @semantic-release/release-notes-generator > release_notes.md
-          echo "RELEASE_NOTES=$(cat release_notes.md)" >> $GITHUB_OUTPUT
+            npx semantic-release --dry-run --plugins @semantic-release/release-notes-generator --branches main,next,beta > release_notes.md
 
       - name: Get tag
         id: tag
