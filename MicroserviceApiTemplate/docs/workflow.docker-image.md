@@ -5,8 +5,6 @@ Création d'une release :
 
 git tag -a v1.0 -m "Version 1.0"
 git tag -a v1.0.0 -m "Version 1.0.0"
-git branch release/v1.0.0 v1.0.0
-git push origin release/v1.0.0
 git push origin v1.0.0
 
 

@@ -19,7 +19,9 @@ jobs:
 
       - name: Get tag
         id: tag
-        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
