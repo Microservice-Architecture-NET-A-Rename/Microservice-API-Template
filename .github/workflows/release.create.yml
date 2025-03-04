@@ -30,23 +30,20 @@ jobs:
       - name: Generate Release Notes
         id: release_notes
         run: |
-          set -x  # Active le mode de débogage
-        
-          # Obtenir le dernier tag
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-        
-          if [ -z "$LATEST_TAG" ]; then
-            echo "Aucun tag trouvé, génération des notes depuis le début du projet"
-            npx conventional-changelog-cli -p angular -r 0 > release_notes.md
-          else
-            echo "Dernier tag trouvé: $LATEST_TAG"
-            # Générer les notes depuis le dernier tag
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 --exclude $LATEST_TAG 2>/dev/null || echo "")
+    
+          if [ -z "$PREVIOUS_TAG" ]; then
+            # Si pas de tag précédent, générer depuis le début du projet
             npx conventional-changelog-cli -p angular -r 1 > release_notes.md
+          else
+            # Sinon, générer entre l'avant-dernier et le dernier tag
+            npx conventional-changelog-cli -p angular --from=$PREVIOUS_TAG --to=$LATEST_TAG > release_notes.md
           fi
-        
+          
           echo "RELEASE_NOTES=$(cat release_notes.md)" >> $GITHUB_OUTPUT
-        
-          set +x  # Désactive le mode de débogage
+
+         
 
 
       - name: Get tag
