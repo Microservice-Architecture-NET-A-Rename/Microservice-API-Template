@@ -1,5 +1,16 @@
 
 
+
+Création d'une release :
+
+git tag -a v1.0 -m "Version 1.0"
+git tag -a v1.0.0 -m "Version 1.0.0"
+git branch release/v1.0.0 v1.0.0
+git push origin release/v1.0.0
+git push origin v1.0.0
+
+
+
 https://github.com/marketplace/actions/build-and-push-docker-images
 https://github.com/docker/metadata-action
 https://docs.docker.com/docker-hub/quickstart/#step-3-build-and-push-an-image-to-docker-hub

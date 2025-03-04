@@ -14,9 +14,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get tag
+        id: tag
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/') && github.event.base_ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
+          name: Release ${{ steps.tag.outputs.TAG }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release Branch
+        run: |
+          git checkout -b release/${{ steps.tag.outputs.TAG }}
+          git push origin release/${{ steps.tag.outputs.TAG }}
+
+
 
 
       
