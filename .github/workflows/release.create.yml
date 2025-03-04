@@ -28,31 +28,52 @@ jobs:
       - name: Generate Release Notes
         id: release_notes
         run: |
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null)
+          set -x  # Active le mode de débogage
 
-            if [ -z "$LATEST_TAG" ]; then
-              # Aucun tag n'existe, utiliser le premier commit
-              FROM=$(git rev-list --max-parents=0 HEAD)
-            else
-              # Au moins un tag existe
-              PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${LATEST_TAG}^ 2>/dev/null)
-              if [ -z "$PREVIOUS_TAG" ]; then
-                # Seulement un tag existe, utiliser le premier commit
-                FROM=$(git rev-list --max-parents=0 HEAD)
-              else
-                FROM=$PREVIOUS_TAG
-              fi
+          # Vérifier si Git est installé et configuré correctement
+          git --version
+          git config --list
+
+          # Obtenir le dernier tag
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo "Aucun tag trouvé"
+            # Aucun tag n'existe, utiliser le premier commit
+            FROM=$(git rev-list --max-parents=0 HEAD 2>/dev/null || echo "")
+            if [ -z "$FROM" ]; then
+              echo "Erreur: Impossible de trouver le premier commit"
+              exit 1
             fi
-            
-            # Générer les notes de version
-            npx semantic-release --dry-run --no-ci --generate-notes-only \
-              --plugins @semantic-release/release-notes-generator \
-              --from $FROM \
-              --to ${LATEST_TAG:-HEAD} \
-              > release_notes.md
-            
-            echo "RELEASE_NOTES=$(cat release_notes.md)" >> $GITHUB_OUTPUT
+          else
+            echo "Dernier tag trouvé: $LATEST_TAG"
+            # Au moins un tag existe
+            PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${LATEST_TAG}^ 2>/dev/null || echo "")
+            if [ -z "$PREVIOUS_TAG" ]; then
+              echo "Pas d'avant-dernier tag trouvé, utilisation du premier commit"
+              FROM=$(git rev-list --max-parents=0 HEAD 2>/dev/null || echo "")
+              if [ -z "$FROM" ]; then
+                echo "Erreur: Impossible de trouver le premier commit"
+                exit 1
+              fi
+            else
+              echo "Avant-dernier tag trouvé: $PREVIOUS_TAG"
+              FROM=$PREVIOUS_TAG
+            fi
+          fi
 
+          echo "Génération des notes de version de $FROM à ${LATEST_TAG:-HEAD}"
+
+          # Générer les notes de version
+          npx semantic-release --dry-run --no-ci --generate-notes-only \
+            --plugins @semantic-release/release-notes-generator \
+            --from $FROM \
+            --to ${LATEST_TAG:-HEAD} \
+            > release_notes.md
+
+          echo "RELEASE_NOTES=$(cat release_notes.md)" >> $GITHUB_OUTPUT
+
+          set +x  # Désactive le mode de débogage
 
       - name: Get tag
         id: tag
@@ -77,8 +98,3 @@ jobs:
         run: |
           git checkout -b release/${{ steps.tag.outputs.TAG }}
           git push origin release/${{ steps.tag.outputs.TAG }}
-
-
-
-
-      
