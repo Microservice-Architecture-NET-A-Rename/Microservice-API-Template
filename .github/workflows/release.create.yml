@@ -47,16 +47,12 @@ jobs:
           
           # Encoder le contenu en base64 pour éviter les problèmes de caractères spéciaux
           RELEASE_NOTES=$(cat release_notes.md)
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
-          echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
+          echo "RELEASE_NOTES=$RELEASE_NOTES" >> $GITHUB_OUTPUT
          
       - name: Get tag
         id: tag
         run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          echo {{ steps.release_notes.outputs.RELEASE_NOTES }}
+          TAG=${GITHUB_REF#refs/tags/}s
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
