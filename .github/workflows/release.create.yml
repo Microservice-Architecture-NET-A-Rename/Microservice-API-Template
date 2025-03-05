@@ -30,24 +30,32 @@ jobs:
       - name: Generate Release Notes
         id: release_notes
         run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 --exclude $LATEST_TAG 2>/dev/null || echo "")
+           # Récupérer tous les tags triés par date (le plus récent en premier)
+           ALL_TAGS=$(git tag --sort=-creatordate)
+    
+           # Récupérer le dernier tag (le plus récent)
+           LATEST_TAG=$(echo "$ALL_TAGS" | head -n 1)
+    
+           # Récupérer l'avant-dernier tag (s'il existe)
+           PREVIOUS_TAG=$(echo "$ALL_TAGS" | sed -n '2p')
+    
+           echo "Latest tag $LATEST_TAG"
+           echo "Previous tag $PREVIOUS_TAG"
+           
+           if [ -z "$PREVIOUS_TAG" ]; then
+             echo "Pas de tag précédent trouvé. Génération depuis le début du projet."
+             npx conventional-changelog-cli -p angular -r 0 > release_notes.md
+           else
+             echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"
+             npx conventional-changelog-cli -p angular --from="$PREVIOUS_TAG" --to="$LATEST_TAG" > release_notes.md
+           fi
+           
+           echo "Contenu de release_notes.md:"
+           cat release_notes.md
 
-          if [ -z "$PREVIOUS_TAG" ]; then
-            # Si pas de tag précédent, générer depuis le début du projet
-            npx conventional-changelog-cli -p angular -r 1 > release_notes.md
-          else
-            # Sinon, générer entre l'avant-dernier et le dernier tag
-            npx conventional-changelog-cli -p angular --from=$PREVIOUS_TAG --to=$LATEST_TAG > release_notes.md
-          fi
           
-          # Afficher le contenu pour le débogage
-          echo "Contenu de release_notes.md:"
-          cat release_notes.md
-          
-          # Encoder le contenu en base64 pour éviter les problèmes de caractères spéciaux
-          RELEASE_NOTES=$(cat release_notes.md)
-          echo "RELEASE_NOTES=$RELEASE_NOTES" >> $GITHUB_OUTPUT
+           RELEASE_NOTES=$(cat release_notes.md)
+           echo "RELEASE_NOTES=$RELEASE_NOTES" >> $GITHUB_OUTPUT
          
       - name: Get tag
         id: tag
