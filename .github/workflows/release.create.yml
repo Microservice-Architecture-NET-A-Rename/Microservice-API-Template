@@ -46,8 +46,11 @@ jobs:
           cat release_notes.md
           
           # Encoder le contenu en base64 pour éviter les problèmes de caractères spéciaux
-          RELEASE_NOTES_B64=$(base64 -w 0 release_notes.md)
-          echo "RELEASE_NOTES=$RELEASE_NOTES_B64" >> $GITHUB_OUTPUT
+          RELEASE_NOTES=$(cat release_notes.md)
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+          echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
          
       - name: Get tag
         id: tag
