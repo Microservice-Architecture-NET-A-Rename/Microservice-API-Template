@@ -32,7 +32,7 @@ jobs:
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0)
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 --exclude $LATEST_TAG 2>/dev/null || echo "")
-
+    
           if [ -z "$PREVIOUS_TAG" ]; then
             # Si pas de tag précédent, générer depuis le début du projet
             npx conventional-changelog-cli -p angular -r 1 > release_notes.md
@@ -41,14 +41,7 @@ jobs:
             npx conventional-changelog-cli -p angular --from=$PREVIOUS_TAG --to=$LATEST_TAG > release_notes.md
           fi
           
-          # Vérifier le contenu du fichier
-          echo "Contenu de release_notes.md:"
-          cat release_notes.md
-          
-          # Stocker le contenu dans une variable d'environnement GitHub
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          cat release_notes.md >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "RELEASE_NOTES=$(cat release_notes.md)" >> $GITHUB_OUTPUT
 
          
       - name: Get tag
