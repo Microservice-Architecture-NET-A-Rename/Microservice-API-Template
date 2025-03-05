@@ -32,7 +32,7 @@ jobs:
         run: |
           LATEST_TAG=$(git describe --tags --abbrev=0)
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 --exclude $LATEST_TAG 2>/dev/null || echo "")
-    
+
           if [ -z "$PREVIOUS_TAG" ]; then
             # Si pas de tag précédent, générer depuis le début du projet
             npx conventional-changelog-cli -p angular -r 1 > release_notes.md
@@ -41,8 +41,13 @@ jobs:
             npx conventional-changelog-cli -p angular --from=$PREVIOUS_TAG --to=$LATEST_TAG > release_notes.md
           fi
           
-          echo "RELEASE_NOTES=$(cat release_notes.md)" >> $GITHUB_OUTPUT
-
+          # Afficher le contenu pour le débogage
+          echo "Contenu de release_notes.md:"
+          cat release_notes.md
+          
+          # Encoder le contenu en base64 pour éviter les problèmes de caractères spéciaux
+          RELEASE_NOTES_B64=$(base64 -w 0 release_notes.md)
+          echo "RELEASE_NOTES=$RELEASE_NOTES_B64" >> $GITHUB_OUTPUT
          
       - name: Get tag
         id: tag
@@ -54,7 +59,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          body_path: release_notes.md
+          body: ${{ fromJSON(steps.release_notes.outputs.RELEASE_NOTES) }}
           tag_name: ${{ steps.tag.outputs.TAG }}
           name: Release ${{ steps.tag.outputs.TAG }}
           draft: true
