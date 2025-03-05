@@ -8,6 +8,25 @@ git tag -a v1.0.0 -m "Version 1.0.0"
 git push origin v1.0.0
 
 
+Format d'un commit:
+<type>(<scope>): <description>
+
+[corps du commit]
+
+[pied de page du commit]
+
+exemple: 
+feat(auth): add support for Google authentication
+fix(login): resolve issue with incorrect password validation
+docs(readme): update installation instructions
+feat: fonctionnalités impactaant plusieurs domaines fonctionnels
+
+
+
+Message format commit: https://github.com/conventional-changelog/conventional-changelog
+
+
+
 
 https://github.com/marketplace/actions/build-and-push-docker-images
 https://github.com/docker/metadata-action
