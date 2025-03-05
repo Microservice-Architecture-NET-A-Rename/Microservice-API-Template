@@ -47,7 +47,7 @@ jobs:
              npx conventional-changelog-cli -p angular -r 0 > release_notes.md
            else
              echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"
-             npx conventional-changelog-cli -p angular --from="$PREVIOUS_TAG" --to="$LATEST_TAG" > release_notes.md
+             npx conventional-changelog-cli -p angular -r 2 > release_notes.md
            fi
            
            echo "Contenu de release_notes.md:"
