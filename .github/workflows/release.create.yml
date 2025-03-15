@@ -29,15 +29,12 @@ jobs:
 
       - name: Generate Release Notes
         id: release_notes
-        run: |
-           # Récupérer tous les tags triés par date (le plus récent en premier)
-           ALL_TAGS=$(git tag --sort=-creatordate)
-    
+        run: |    
            # Récupérer le dernier tag (le plus récent)
-           LATEST_TAG=$(echo "$ALL_TAGS" | head -n 1)
+           LATEST_TAG=$(git describe --tags --abbrev=0)
     
            # Récupérer l'avant-dernier tag (s'il existe)
-           PREVIOUS_TAG=$(echo "$ALL_TAGS" | sed -n '2p')
+           PREVIOUS_TAG=$(git describe --tags --abbrev=0 $LATEST_TAG^)
     
            echo "Latest tag $LATEST_TAG"
            echo "Previous tag $PREVIOUS_TAG"
