@@ -49,6 +49,68 @@ git push origin --delete v1.0.0
 4.  **Génération des notes de release** : Basé sur les commits entre le tag actuel et le précédent, en utilisant les conventions de [Conventional Commits](https://www.conventionalcommits.org/fr/v1.0.0/).
 5.  **Création de la release GitHub** : Une release en mode brouillon est générée avec les notes associées.
 
+### Focus sur les Correctifs (Hotfixes) et le Cherry-Picking
+
+Cette section détaille la procédure à suivre pour appliquer des correctifs sur des versions spécifiques, en utilisant le cherry-picking si nécessaire.
+
+**Scénario : Application d'un correctif à la version v2.0.0 et potentiellement à d'autres versions (v4.0.0 par exemple).**
+
+1.  **Création d'une branche temporaire à partir du tag cible :**
+
+    ```
+    git checkout -b hotfix-2.0.0 v2.0.0
+    ```
+
+2.  **Application des correctifs :**
+
+    -   Effectuer les modifications nécessaires pour corriger le problème.
+    -   Commit des changements avec un message clair et concis, respectant les conventions de commit.
+
+3.  **Tests approfondis :**
+
+    -   Exécuter des tests unitaires, d'intégration et/ou manuels pour valider le correctif.
+    -   S'assurer que le correctif ne crée pas de régression.
+
+4.  **Création du tag de la nouvelle version corrigée (v2.0.1) :**
+
+    ```
+    git tag -a v2.0.1 -m "Correctif appliqué sur la version 2.0.0"
+    git push origin v2.0.1
+    ```
+
+5.  **Cherry-picking vers une autre version (si nécessaire) :**
+
+    -   Si le correctif doit être intégré à une autre version (par exemple, v4.0.0) sans impacter les versions intermédiaires, créer une nouvelle branche à partir du tag correspondant :
+
+        ```
+        git checkout -b hotfix-4.0.0 v4.0.0
+        ```
+
+    -   Identifier le ou les commits du correctif (sur la branche `hotfix-2.0.0`).
+    -   Utiliser `git cherry-pick <commit-id>` pour appliquer le(s) commit(s) sur la branche `hotfix-4.0.0`.
+
+        ```
+        git cherry-pick <commit-id-du-correctif-2.0.1>
+        ```
+
+    -   Résoudre les éventuels conflits.
+    -   Tester minutieusement la branche `hotfix-4.0.0` après le cherry-pick.
+
+6.  **Création du tag de la nouvelle version corrigée (v4.0.1) :**
+
+    ```
+    git tag -a v4.0.1 -m "Correctif de la version 2.0.1 appliqué à la version 4.0.0"
+    git push origin v4.0.1
+    ```
+
+**Points importants :**
+
+-   Toujours tester les correctifs après leur application ou cherry-pick.
+-   Utiliser des messages de commit clairs et informatifs pour faciliter la traçabilité.
+-   Documenter les correctifs dans les notes de release.
+-   Supprimer les branches temporaires une fois les tags créés. (optionnel)
+
+
 ## Déclenchement
 
 Le workflow est déclenché lorsqu'un nouveau tag correspondant au format `v*.*.*` est poussé dans le dépôt.
