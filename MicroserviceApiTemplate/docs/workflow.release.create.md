@@ -11,6 +11,7 @@ Ce workflow GitHub Actions automatise la gestion des versions en créant des tag
 -   Assurer un suivi structuré des modifications à l'aide de tags immuables.
 -   Faciliter l'application de correctifs sur différentes versions grâce à des branches temporaires créées à partir des tags.
 -   Générer automatiquement des notes de release basées sur les commits, en suivant les conventions de [Conventional Commits](https://www.conventionalcommits.org/fr/v1.0.0/).
+-   **Garantir l'auto-documentation des modifications** en associant chaque commit et chaque tag à une tâche dans un outil de gestion de projet comme Azure DevOps, Jira ou GitHub Projects.
 
 ## Organisation du Workflow
 
@@ -112,6 +113,16 @@ Cette section détaille la procédure à suivre pour appliquer des correctifs su
 -   Documenter les correctifs dans les notes de release.
 -   Supprimer les branches temporaires une fois les tags créés. (optionnel)
 
+
+
+### Génération et Traçabilité des Notes de Release
+
+Le workflow inclut un mécanisme d'auto-documentation en générant des notes de release détaillées. Ces notes sont créées automatiquement à partir des messages de commit, en respectant la convention [Conventional Commits](https://www.conventionalcommits.org/fr/v1.0.0/). Chaque modification est associée à une tâche spécifique dans un outil de gestion de projet comme Azure DevOps, Jira ou GitHub Projects.
+
+**Avantages :**
+-   **Lien direct entre les modifications et les tâches projet** : Chaque commit doit inclure un identifiant de tâche (ex: `feat(core): ajout du support multi-langues [AB#1234]` pour Azure DevOps ou `fix(ui): correction du bug d'affichage (JIRA-456)`).
+-   **Meilleure traçabilité** : Les équipes peuvent rapidement identifier les raisons des modifications et retrouver l'historique des décisions.
+-   **Automatisation du reporting** : Les releases GitHub contiennent automatiquement des liens vers les tickets et tâches concernées, améliorant la transparence et la communication entre équipes.
 
 
 ## Déclenchement
@@ -240,5 +251,8 @@ Crée une release GitHub en mode brouillon avec les notes générées.
 ## Conclusion
 
 Ce workflow optimise la gestion des versions en s'appuyant sur les principes de Trunk Based Development et l'utilisation de tags immuables.  Il élimine ainsi la nécessité de maintenir des branches de release complexes. Il simplifie le processus de release tout en garantissant un suivi précis des modifications et en facilitant l'application de correctifs ciblés.  L'adoption de Trunk Based Development favorise un flux de développement plus rapide et une collaboration plus efficace.
+
+
+
 
 
