@@ -23,6 +23,7 @@ Ce workflow GitHub Actions automatise la gestion des versions en créant des tag
     -   Un correctif sur une version spécifique implique la création d'une branche temporaire depuis le tag concerné.
     -   Une fois les correctifs terminés et validés, un nouveau tag est créé (ex: `v2.0.1`).  Ce tag pointe vers le commit contenant le correctif sur la branche temporaire.
     -   Si un correctif doit être appliqué à une version ultérieure mais pas intermédiaire (ex: `v4.0.1` sans passer par `v3.0.0`), une branche est créée à partir du tag cible et les correctifs sont cherry-pickés ou reportés.
+    -   **L'historique entre le tag actuel et le tag précédent est conservé, même après la suppression de la branche temporaire.** La suppression de la branche temporaire n'efface pas l'historique Git, car les commits restent accessibles via les tags et les références des commits.
 
 ### Exemple d'Utilisation des Tags
 
@@ -48,6 +49,7 @@ git push origin --delete v1.0.0
 3.  **Déclenchement du Workflow** : Le push du tag déclenche automatiquement le workflow GitHub Actions.
 4.  **Génération des notes de release** : Basé sur les commits entre le tag actuel et le précédent, en utilisant les conventions de [Conventional Commits](https://www.conventionalcommits.org/fr/v1.0.0/).
 5.  **Création de la release GitHub** : Une release en mode brouillon est générée avec les notes associées.
+
 
 ### Focus sur les Correctifs (Hotfixes) et le Cherry-Picking
 
@@ -109,6 +111,7 @@ Cette section détaille la procédure à suivre pour appliquer des correctifs su
 -   Utiliser des messages de commit clairs et informatifs pour faciliter la traçabilité.
 -   Documenter les correctifs dans les notes de release.
 -   Supprimer les branches temporaires une fois les tags créés. (optionnel)
+
 
 
 ## Déclenchement
