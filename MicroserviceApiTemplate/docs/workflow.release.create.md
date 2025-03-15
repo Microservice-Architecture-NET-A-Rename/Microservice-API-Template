@@ -1,50 +1,49 @@
-﻿# Documentation du Workflow "Create Release Branch"
+﻿# Documentation du Workflow "Create Release Tag"
 
 ## Introduction
 
-Ce workflow GitHub Actions est conçu pour automatiser la gestion des versions dans un projet en créant des branches de release et en générant automatiquement des notes de version. Il repose sur l'utilisation des tags Git pour détecter les nouvelles versions et assurer un suivi structuré des changements.
+Ce workflow GitHub Actions automatise la gestion des versions en créant des tags immuables pour suivre les évolutions du projet. Contrairement aux approches traditionnelles qui maintiennent des branches de release, cette méthode repose uniquement sur les tags, évitant ainsi la gestion de branches inutiles tout en assurant un suivi clair des modifications.
 
 ## Objectifs
 
-- Maintenir un contrôle total sur le versioning.
+- Simplifier la gestion des versions en évitant les branches de release superflues.
+- Assurer un suivi structuré des modifications à l'aide des tags immuables.
+- Faciliter l'application de correctifs sur différentes versions grâce à des branches temporaires.
 - Générer automatiquement des notes de release basées sur les commits.
-- Créer automatiquement une branche de release à partir du dernier tag.
-- Faciliter la gestion des tests et le suivi des modifications.
 
 ## Organisation du Workflow
 
+### Philosophie des Tags
+
+1. **Les tags sont immuables** : Un tag pointe toujours sur le commit correspondant à la release. Il n'est pas modifié après sa création.
+2. **Suppression des branches non nécessaires** : Une fois un tag créé, il n'est plus nécessaire de maintenir une branche associée.
+3. **Création de branches temporaires si nécessaire** : En cas de correctif ou d'ajout de fonctionnalité, une branche temporaire est créée à partir du tag concerné.
+4. **Gestion des correctifs** :
+    - Un correctif sur une version spécifique implique la création d'une branche temporaire depuis le tag concerné.
+    - Une fois les correctifs terminés et validés, un nouveau tag est créé (ex: `v2.0.1`).
+    - Si un correctif doit être appliqué à une version ultérieure mais pas intermédiaire (ex: `v4.0.1` sans passer par `v3.0.0`), une branche est créée à partir du tag cible et les correctifs sont cherry-pickés.
+
+### Exemple d'Utilisation des Tags
+
+#### Création d'un tag pour une release :
+```sh
+git tag -a v1.0.0 -m "Version 1.0.0"
+git push origin v1.0.0
+```
+
+#### Suppression d'un tag :
+```sh
+git tag -d v1.0.0
+git push origin --delete v1.0.0
+```
+
 ### Flux de travail
 
-1. **Développement** : Les développeurs travaillent sur une branche de développement, implémentant de nouvelles fonctionnalités et corrections.
-
-2. **Tagging** : Lorsque le périmètre fonctionnel d'une release est atteint, un tag est créé (ex: v1.2.3) sur le dernier commit de la branche de développement.
-
-3. **Déclenchement** : Le push du tag déclenche automatiquement le workflow GitHub Actions.
-
-4. **Génération des notes** : Le workflow génère les notes de release en se basant sur les commits entre le tag actuel et le précédent.
-
-5. **Création de la release** : Une nouvelle release GitHub est créée en mode brouillon, incluant les notes générées.
-
-6. **Branche de release** : Une branche de release est automatiquement créée à partir du tag (ex: release/v1.2.3).
-
-### Avantages de cette approche
-
-1. **Contrôle du versioning** :
-   - Décision manuelle du moment opportun pour créer une release.
-   - Flexibilité dans la numérotation des versions selon les besoins du projet.
-
-2. **Automatisation et cohérence** :
-   - Génération automatique des notes de release basées sur les commits conventionnels.
-   - Création systématique d'une branche de release pour chaque nouvelle version.
-
-3. **Traçabilité et visibilité** :
-   - Les notes de release fournissent un résumé clair des changements entre versions.
-   - Les branches de release facilitent les tests finaux et les éventuelles corrections avant déploiement.
-
-4. **Intégration avec le processus de développement** :
-   - Encourage l'utilisation de commits conventionnels pour une meilleure organisation des changements.
-   - Facilite la revue et la validation des changements avant la publication finale.
-
+1. **Développement** : Les développeurs travaillent sur la branche principale.
+2. **Tagging** : Lorsqu'une version est prête, un tag est créé (ex: `v1.2.3`).
+3. **Déclenchement du Workflow** : Le push du tag déclenche automatiquement le workflow GitHub Actions.
+4. **Génération des notes de release** : Basé sur les commits entre le tag actuel et le précédent.
+5. **Création de la release GitHub** : Une release en mode brouillon est générée avec les notes associées.
 
 ## Déclenchement
 
@@ -71,7 +70,7 @@ permissions:
 
 ### 1. Checkout du code
 
-Récupère le code du dépôt, en s'assurant d'avoir tout l'historique des commits pour générer correctement les notes de release.
+Récupère le code du dépôt avec l'historique complet.
 
 ```yaml
 - name: Checkout code
@@ -93,7 +92,7 @@ Installe Node.js en version 18 pour exécuter les scripts de génération des no
 
 ### 3. Installation des dépendances
 
-Installe l'outil `conventional-changelog-cli` pour générer les notes de release.
+Installe `conventional-changelog-cli` pour générer les notes de release.
 
 ```yaml
 - name: Install dependencies
@@ -102,19 +101,14 @@ Installe l'outil `conventional-changelog-cli` pour générer les notes de releas
 
 ### 4. Génération des notes de release
 
-Cette étape :
-- Récupère les tags existants.
-- Identifie le dernier et l'avant-dernier tag.
-- Génère les notes de release entre ces deux tags.
-- Stocke le contenu généré pour utilisation dans la création de la release.
+Identifie les tags existants et génère les notes de release entre le dernier tag et le précédent.
 
 ```yaml
 - name: Generate Release Notes
   id: release_notes
   run: |
-    ALL_TAGS=$(git tag --sort=-creatordate)
-    LATEST_TAG=$(echo "$ALL_TAGS" | head -n 1)
-    PREVIOUS_TAG=$(echo "$ALL_TAGS" | sed -n '2p')
+    LATEST_TAG=$(git describe --tags --abbrev=0)
+    PREVIOUS_TAG=$(git describe --tags --abbrev=0 $LATEST_TAG^ || echo "")
     
     if [ -z "$PREVIOUS_TAG" ]; then
       npx conventional-changelog-cli -p angular -r 0 > release_notes.md
@@ -141,7 +135,7 @@ Extrait le tag actuel à partir de la référence GitHub.
 
 ### 6. Création de la release GitHub
 
-Utilise `softprops/action-gh-release` pour publier une release en mode brouillon avec les notes générées.
+Crée une release GitHub en mode brouillon avec les notes générées.
 
 ```yaml
 - name: Create GitHub Release
@@ -158,48 +152,12 @@ Utilise `softprops/action-gh-release` pour publier une release en mode brouillon
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-### 7. Création de la branche de release
-
-Crée une nouvelle branche de release à partir du tag actuel et la pousse sur le dépôt.
-
-```yaml
-- name: Create Release Branch
-  run: |
-    git checkout -b release/${{ steps.tag.outputs.TAG }}
-    git push origin release/${{ steps.tag.outputs.TAG }}
-```
-
-## Format des commits
-
-Le workflow utilise `conventional-changelog-cli`, qui repose sur un format de commit structuré. Les principaux types de commits sont :
-
-- `feat(scope): description` → Ajout d'une nouvelle fonctionnalité.
-- `fix(scope): description` → Correction d'un bug.
-- `docs(scope): description` → Mise à jour de la documentation.
-
-Exemples :
-
-```text
-feat(auth): add support for Google authentication
-fix(login): resolve issue with incorrect password validation
-docs(readme): update installation instructions
-```
-
-Plus de détails sur le format des commits : [Conventional Changelog](https://github.com/conventional-changelog/conventional-changelog)
-
 ## Avantages de cette approche
 
-1. **Contrôle du versioning** :
-   - Permet de définir manuellement quand une version est prête pour une release.
-   - Assure la cohérence du suivi des versions grâce aux tags.
-
-2. **Automatisation des releases** :
-   - Génère automatiquement une release et ses notes à partir des commits.
-   - Structure les changements en catégories (features, fixes, documentation, etc.).
-
-3. **Création automatique des branches de release** :
-   - Facilite la gestion des tests et des validations avant mise en production.
-   - Permet une meilleure visibilité sur les évolutions du projet.
+1. **Simplicité** : Pas de gestion de branches de release, uniquement des tags immuables.
+2. **Flexibilité** : Facilité à appliquer des correctifs ciblés sans maintenir des branches inutiles.
+3. **Automatisation** : Génération des notes de release et publication de la release GitHub sans intervention manuelle.
+4. **Traçabilité** : Chaque version est clairement identifiée par un tag unique.
 
 ## Outils utilisés
 
@@ -207,22 +165,7 @@ Plus de détails sur le format des commits : [Conventional Changelog](https://gi
 - **conventional-changelog-cli** : Génération des notes de release.
 - **softprops/action-gh-release** : Création des releases GitHub.
 
-## Liens utiles
-
-- [Conventional Commits](https://www.conventionalcommits.org/) : Guide sur le format de commits conventionnels utilisé par ce workflow.
-- [conventional-changelog-cli](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-cli) : Documentation de l'outil utilisé pour générer les notes de release.
-- [GitHub Actions: Creating releases](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release) : Documentation officielle sur la création de releases avec GitHub Actions.
-- [softprops/action-gh-release](https://github.com/softprops/action-gh-release) : Action GitHub utilisée pour créer les releases dans ce workflow.
-- [Semantic Versioning](https://semver.org/) : Guide sur le versioning sémantique, utile pour comprendre la structure des tags.
-- [GitHub: Managing releases in a repository](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) : Guide général sur la gestion des releases dans GitHub.
-
-### Ressources complémentaires
-
-- [GitHub Actions: Workflow syntax](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions) : Référence complète sur la syntaxe des workflows GitHub Actions.
-- [GitHub: About tags](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases#about-releases) : Informations sur l'utilisation des tags dans GitHub.
-
-
 ## Conclusion
 
-Ce workflow offre une solution robuste et automatisée pour gérer les releases, en assurant un suivi clair des modifications grâce à un conventionnement strict des commits. Il permet d'améliorer la qualité et la traçabilité des versions tout en réduisant la charge manuelle liée à la gestion des releases.
+Ce workflow optimise la gestion des versions en s'appuyant sur des tags immuables, éliminant ainsi la nécessité de maintenir des branches de release. Il simplifie le processus tout en garantissant un suivi précis des modifications et en facilitant l'application de correctifs ciblés.
 
