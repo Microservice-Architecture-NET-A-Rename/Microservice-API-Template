@@ -2,29 +2,30 @@
 
 ## Introduction
 
-Ce workflow GitHub Actions automatise la gestion des versions en créant des tags immuables pour suivre les évolutions du projet, conformément aux principes de Trunk Based Development.  L'approche "Trunk Based Development" met l'accent sur un tronc principal unique (généralement `main` ou `trunk`) et minimise l'utilisation de branches de longue durée. Dans ce contexte, les releases sont gérées principalement par des tags, évitant ainsi la complexité des branches de release traditionnelles.
+Ce workflow GitHub Actions automatise la gestion des versions en créant des tags immuables pour suivre les évolutions du projet, conformément aux principes de Trunk Based Development. L'approche "Trunk Based Development" met l'accent sur un tronc principal unique (généralement main ou trunk) et minimise l'utilisation de branches de longue durée. Dans ce contexte, les releases sont gérées principalement par des tags, évitant ainsi la complexité des branches de release traditionnelles.
 
 ## Objectifs
 
--   Adopter une stratégie de gestion des versions basée sur les principes de Trunk Based Development.
--   Simplifier la gestion des versions en évitant les branches de release superflues.
--   Assurer un suivi structuré des modifications à l'aide de tags immuables.
--   Faciliter l'application de correctifs sur différentes versions grâce à des branches temporaires créées à partir des tags.
--   Générer automatiquement des notes de release basées sur les commits, en suivant les conventions de [Conventional Commits](https://www.conventionalcommits.org/fr/v1.0.0/).
--   **Garantir l'auto-documentation des modifications** en associant chaque commit et chaque tag à une tâche dans un outil de gestion de projet comme Azure DevOps, Jira ou GitHub Projects.
+- Adopter une stratégie de gestion des versions basée sur les principes de Trunk Based Development.
+- Simplifier la gestion des versions en évitant les branches de release superflues.
+- Assurer un suivi structuré des modifications à l'aide de tags immuables.
+- Faciliter l'application de correctifs sur différentes versions grâce à des branches temporaires créées à partir des tags.
+- Générer automatiquement des notes de release basées sur les commits, en suivant les conventions de [Conventional Commits](https://www.conventionalcommits.org/fr/v1.0.0/).
+- **Garantir l'auto-documentation des modifications** en associant chaque commit et chaque tag à une tâche dans un outil de gestion de projet comme Azure DevOps, Jira ou GitHub Projects.
 
 ## Organisation du Workflow
 
 ### Philosophie des Tags (Inspirée de Trunk Based Development)
 
-1.  **Tags immuables** : Un tag pointe toujours sur le commit correspondant à la release. Il n'est jamais modifié après sa création. C'est un instantané précis du code à un moment donné.
-2.  **Absence de branches de release permanentes** : Conformément à Trunk Based Development, il n'y a pas de branches de release de longue durée.
-3.  **Branches temporaires pour les correctifs** : Si un correctif est nécessaire sur une ancienne version, une branche temporaire est créée à partir du tag correspondant.  Une fois le correctif appliqué et testé, un nouveau tag est créé pour cette version corrigée.
-4.  **Gestion des correctifs (Hotfixes)** :
-    -   Un correctif sur une version spécifique implique la création d'une branche temporaire depuis le tag concerné.
-    -   Une fois les correctifs terminés et validés, un nouveau tag est créé (ex: `v2.0.1`).  Ce tag pointe vers le commit contenant le correctif sur la branche temporaire.
-    -   Si un correctif doit être appliqué à une version ultérieure mais pas intermédiaire (ex: `v4.0.1` sans passer par `v3.0.0`), une branche est créée à partir du tag cible et les correctifs sont cherry-pickés ou reportés.
-    -   **L'historique entre le tag actuel et le tag précédent est conservé, même après la suppression de la branche temporaire.** La suppression de la branche temporaire n'efface pas l'historique Git, car les commits restent accessibles via les tags et les références des commits.
+1. **Tags immuables** : Un tag pointe toujours sur le commit correspondant à la release. Il n'est jamais modifié après sa création. C'est un instantané précis du code à un moment donné.
+2. **Absence de branches de release permanentes** : Conformément à Trunk Based Development, il n'y a pas de branches de release de longue durée.
+3. **Branches temporaires pour les correctifs** : Si un correctif est nécessaire sur une ancienne version, une branche temporaire est créée à partir du tag correspondant. Une fois le correctif appliqué et testé, un nouveau tag est créé pour cette version corrigée.
+4. **Gestion des correctifs (Hotfixes)** :
+   - Tout correctif doit **d'abord être appliqué sur la branche principale** (`main` ou `develop` selon le workflow).
+   - Ensuite, si le correctif concerne une version spécifique en production, une **branche temporaire est créée depuis le tag concerné** pour appliquer le correctif via un cherry-pick depuis la branche principale.
+   - Une fois le correctif validé et testé, un **nouveau tag** est créé sur cette branche temporaire (ex: `v2.0.1`), garantissant la traçabilité.
+   - **Si un correctif doit être appliqué à une version ultérieure sans affecter les versions intermédiaires** (ex: `v4.0.1` sans passer par `v3.0.0`), une branche temporaire est créée depuis le tag cible et le correctif est cherry-piqué ou reporté.
+   - **Une fois le correctif intégré et le tag publié, la branche temporaire peut être supprimée** sans perte d'historique, car les commits restent accessibles via les tags et les références Git.
 
 ### Exemple d'Utilisation des Tags
 
@@ -58,61 +59,79 @@ Cette section détaille la procédure à suivre pour appliquer des correctifs su
 
 **Scénario : Application d'un correctif à la version v2.0.0 et potentiellement à d'autres versions (v4.0.0 par exemple).**
 
-1.  **Création d'une branche temporaire à partir du tag cible :**
-
+1. **Reproduire et corriger le bug sur le tronc principal**
+    ```sh
+    git checkout main
+    git pull origin main
     ```
-    git checkout -b hotfix-2.0.0 v2.0.0
-    ```
-
-2.  **Application des correctifs :**
-
-    -   Effectuer les modifications nécessaires pour corriger le problème.
-    -   Commit des changements avec un message clair et concis, respectant les conventions de commit.
-
-3.  **Tests approfondis :**
-
-    -   Exécuter des tests unitaires, d'intégration et/ou manuels pour valider le correctif.
-    -   S'assurer que le correctif ne crée pas de régression.
-
-4.  **Création du tag de la nouvelle version corrigée (v2.0.1) :**
-
-    ```
-    git tag -a v2.0.1 -m "Correctif appliqué sur la version 2.0.0"
-    git push origin v2.0.1
+    - Reproduire le bug directement sur `main`
+    - Développer le correctif avec tests associés
+    - Committer avec un message clair :
+    ```sh
+    git commit -m "fix: résolution du bug X [RELATES #123]"
     ```
 
-5.  **Cherry-picking vers une autre version (si nécessaire) :**
-
-    -   Si le correctif doit être intégré à une autre version (par exemple, v4.0.0) sans impacter les versions intermédiaires, créer une nouvelle branche à partir du tag correspondant :
-
-        ```
-        git checkout -b hotfix-4.0.0 v4.0.0
-        ```
-
-    -   Identifier le ou les commits du correctif (sur la branche `hotfix-2.0.0`).
-    -   Utiliser `git cherry-pick <commit-id>` pour appliquer le(s) commit(s) sur la branche `hotfix-4.0.0`.
-
-        ```
-        git cherry-pick <commit-id-du-correctif-2.0.1>
-        ```
-
-    -   Résoudre les éventuels conflits.
-    -   Tester minutieusement la branche `hotfix-4.0.0` après le cherry-pick.
-
-6.  **Création du tag de la nouvelle version corrigée (v4.0.1) :**
-
-    ```
-    git tag -a v4.0.1 -m "Correctif de la version 2.0.1 appliqué à la version 4.0.0"
-    git push origin v4.0.1
+2. **Création des branches de hotfix**
+    ```sh
+    # Pour v2.0.0
+    git checkout -b hotfix/v2.0.1 v2.0.0
+    # Pour v4.0.0 
+    git checkout -b hotfix/v4.0.1 v4.0.0
     ```
 
-**Points importants :**
+3. **Cherry-pick contrôlé depuis main**
+    ```sh
+    # Trouver le hash du commit de correctif
+    git log main --oneline
 
--   Toujours tester les correctifs après leur application ou cherry-pick.
--   Utiliser des messages de commit clairs et informatifs pour faciliter la traçabilité.
--   Documenter les correctifs dans les notes de release.
--   Supprimer les branches temporaires une fois les tags créés. (optionnel)
+    # Appliquer le correctif sur chaque branche
+    git cherry-pick <commit-hash> -x
+    ```
+    *L'option `-x` ajoute une référence au commit original*
 
+4. **Adaptation spécifique à la version (si nécessaire)**
+    - Modifier **uniquement** ce qui est incompatible avec l'ancienne version
+    - Conserver le même comportement fonctionnel que sur main
+
+5. **Validation et tagging**
+    ```sh
+    # Tests spécifiques à la version
+    npm run test:compatibility --version=2.0.0
+
+    # Création des tags
+    git tag -a v2.0.1 -m "Port du correctif #123 depuis main"
+    git tag -a v4.0.1 -m "Port du correctif #123 depuis main"
+    ```
+
+6. **Propagation vers le dépôt**
+    ```sh
+    git push origin --tags
+    git push origin hotfix/v2.0.1
+    git push origin hotfix/v4.0.1
+    ```
+
+**Points-clés :**
+1. 🚫 **Interdiction** de développer directement sur les branches de release
+2. ✅ **Obligation** de valider le correctif sur main avant tout cherry-pick
+3. 🔍 **Vérification** systématique des différences avec :
+    ```sh
+    git diff main..hotfix/v2.0.1 -- <fichiers-corrigés>
+    ```
+4. 🗑️ **Nettoyage** des branches après merge :
+    ```sh
+    git branch -d hotfix/v2.0.1 hotfix/v4.0.1
+    ```
+
+**Cas exceptionnel** (si le bug n'existe pas sur main) :
+1. Développer le correctif sur la branche release
+2. **Backport** obligatoire vers main avec :
+    ```sh
+    git checkout main
+    git cherry-pick <commit-hash> --no-commit
+    git commit -m "chore: backport du correctif #123 [FROM v2.0.1]"
+    ```
+
+---
 
 
 ### Génération et Traçabilité des Notes de Release
