@@ -125,7 +125,6 @@ Ce workflow automatise la gestion des versions en créant des tags immuables conf
 
 - Assurer un suivi structuré des modifications grâce aux tags.
 - Générer automatiquement des notes de release basées sur les commits.
-- Simplifier l'application de correctifs avec des branches temporaires.
 
 **Principales étapes :**
 1. Création d'un tag Git pour marquer la release.
