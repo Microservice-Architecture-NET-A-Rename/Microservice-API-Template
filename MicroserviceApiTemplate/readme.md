@@ -212,7 +212,7 @@ permissions:
 
 ### Workflow "Publish Docker Image"
 
-Ce workflow automatise la construction et la publication de l'image Docker sur Docker Hub lors de la création d'un tag de release.
+Ce workflow automatise la construction et la publication de l'image Docker sur Docker Hub lors de la publication d'une release.
 
 **Principales étapes :**
 1. Récupération du code source.
