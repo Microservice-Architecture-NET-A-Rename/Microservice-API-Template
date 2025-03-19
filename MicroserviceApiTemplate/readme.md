@@ -7,6 +7,7 @@ Ce projet fournit un modèle de projet .NET Web API préconfiguré pour l'exécution
 - Un `Dockerfile` pour construire et exécuter l'application .NET dans un conteneur.
 - Un fichier `template.json` permettant de créer un modèle de projet .NET personnalisé.
 - Une configuration optimisée pour l'intégration avec Visual Studio pour un débogage efficace.
+- Des workflows GitHub Actions pour la gestion des releases et la publication d'images Docker.
 
 ---
 
@@ -116,6 +117,124 @@ docker run --rm -it -p 8000:8081 -e ASPNETCORE_ENVIRONMENT=Development \
 
 ---
 
+## Workflows GitHub Actions
+
+### Workflow "Create Release Tag"
+
+Ce workflow automatise la gestion des versions en créant des tags immuables conformes aux principes de Trunk Based Development. Il permet de :
+
+- Assurer un suivi structuré des modifications grâce aux tags.
+- Générer automatiquement des notes de release basées sur les commits.
+- Simplifier l'application de correctifs avec des branches temporaires.
+
+**Principales étapes :**
+1. Création d'un tag Git pour marquer la release.
+2. Génération des notes de release.
+3. Publication automatique d'une release GitHub en mode brouillon.
+
+**Déclenchement :**
+
+```yaml
+on:
+  push:
+    tags:
+      - "v*.*.*"
+```
+
+**Permissions requises :**
+
+```yaml
+permissions:
+    contents: write
+    repository-projects: write
+```
+
+---
+
+### Workflow "Publish Docker Image"
+
+Ce workflow automatise la construction et la publication de l'image Docker sur Docker Hub lors de la création d'un tag de release.
+
+**Principales étapes :**
+1. Récupération du code source.
+2. Construction de l'image Docker avec le tag approprié.
+3. Publication de l'image sur Docker Hub.
+
+**Déclenchement :**
+
+```yaml
+on:
+  release:
+    types: [published]
+```
+
+**Exemple d'utilisation :**
+
+```sh
+docker pull zaelyndra/microserviceapitemplate:v1.0.0
+```
+
+---
+
+## Workflows GitHub Actions
+
+### Workflow "Create Release Tag"
+
+Ce workflow automatise la gestion des versions en créant des tags immuables conformes aux principes de Trunk Based Development. Il permet de :
+
+- Assurer un suivi structuré des modifications grâce aux tags.
+- Générer automatiquement des notes de release basées sur les commits.
+- Simplifier l'application de correctifs avec des branches temporaires.
+
+**Principales étapes :**
+1. Création d'un tag Git pour marquer la release.
+2. Génération des notes de release.
+3. Publication automatique d'une release GitHub en mode brouillon.
+
+**Déclenchement :**
+
+```yaml
+on:
+  push:
+    tags:
+      - "v*.*.*"
+```
+
+**Permissions requises :**
+
+```yaml
+permissions:
+    contents: write
+    repository-projects: write
+```
+
+---
+
+### Workflow "Publish Docker Image"
+
+Ce workflow automatise la construction et la publication de l'image Docker sur Docker Hub lors de la création d'un tag de release.
+
+**Principales étapes :**
+1. Récupération du code source.
+2. Construction de l'image Docker avec le tag approprié.
+3. Publication de l'image sur Docker Hub.
+
+**Déclenchement :**
+
+```yaml
+on:
+  release:
+    types: [published]
+```
+
+**Exemple d'utilisation :**
+
+```sh
+docker pull zaelyndra/microserviceapitemplate:v1.0.0
+```
+
+---
+
 ## Liens Utiles
 
 **Docker et .NET**
@@ -130,7 +249,3 @@ docker run --rm -it -p 8000:8081 -e ASPNETCORE_ENVIRONMENT=Development \
 - [Référence du fichier template.json](https://github.com/dotnet/templating/wiki/Reference-for-template.json)
 - [Contraintes des modèles .NET](https://github.com/dotnet/templating/wiki/Constraints)
 - [Personnalisation des modèles .NET CLI](https://learn.microsoft.com/fr-fr/dotnet/core/tools/custom-templates)
-
-
-
-

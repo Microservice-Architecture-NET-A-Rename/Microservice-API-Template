@@ -118,3 +118,35 @@ Génère une attestation de provenance pour l'image Docker publiée, améliorant ain
 - [GitHub: Configuring a workflow to publish Docker images to a registry](https://docs.github.com/en/actions/use-cases-and-examples/publishing-packages/publishing-docker-images)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
