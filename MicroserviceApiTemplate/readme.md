@@ -2,18 +2,16 @@
 
 ## Introduction
 
-Ce projet fournit un modËle de projet .NET Web API prÈconfigurÈ pour l'exÈcution dans un conteneur Docker avec le dÈbogage intÈgrÈ. Il inclut :
+Ce projet fournit un mod√®le de projet .NET Web API pr√©configur√© pour l'ex√©cution dans un conteneur Docker avec le d√©bogage int√©gr√©. Il inclut :
 
-- Un `Dockerfile` pour construire et exÈcuter l'application .NET dans un conteneur.
-- Un fichier `template.json` permettant de crÈer un modËle de projet .NET personnalisÈ.
-- Une configuration optimisÈe pour l'intÈgration avec Visual Studio pour un dÈbogage efficace.
+- Un `Dockerfile` pour construire et ex√©cuter l'application .NET dans un conteneur.
+- Un fichier `template.json` permettant de cr√©er un mod√®le de projet .NET personnalis√©.
+- Une configuration optimis√©e pour l'int√©gration avec Visual Studio pour un d√©bogage efficace.
 - Des workflows GitHub Actions pour la gestion des releases et la publication d'images Docker.
 
----
+## Dockerfile : Construction et Ex√©cution
 
-## Dockerfile : Construction et ExÈcution
-
-### …tapes de Build
+### √âtapes de Build
 
 1. **Construire l'image Docker**
 
@@ -21,7 +19,7 @@ Ce projet fournit un modËle de projet .NET Web API prÈconfigurÈ pour l'exÈcution
    docker build -t app:v1.0 -f ./MicroserviceApiTemplate/Dockerfile .
    ```
 
-2. **ExÈcuter le conteneur en mode HTTP**
+2. **Ex√©cuter le conteneur en mode HTTP**
 
    ```sh
    docker run --rm -it -p 8000:8081 -e ASPNETCORE_HTTP_PORTS=8081 app:v1.0
@@ -34,7 +32,7 @@ Ce projet fournit un modËle de projet .NET Web API prÈconfigurÈ pour l'exÈcution
    dotnet dev-certs https --trust
    ```
 
-4. **ExÈcuter en mode HTTPS**
+4. **Ex√©cuter en mode HTTPS**
 
    ```sh
    docker run --rm -it -p 8000:8081 \
@@ -44,19 +42,17 @@ Ce projet fournit un modËle de projet .NET Web API prÈconfigurÈ pour l'exÈcution
       -v ${HOME}/.aspnet/https:/https/ app:v1.0
    ```
 
-5. **Activer Swagger en mode dÈveloppement**
+5. **Activer Swagger en mode d√©veloppement**
 
    ```sh
    -e ASPNETCORE_ENVIRONMENT=Development
    ```
 
-### DÈbogage avec Visual Studio
+### D√©bogage avec Visual Studio
 
-Visual Studio utilise `Dockerfile.debug` pour gÈnÈrer les images de conteneur, accÈlÈrant ainsi le dÈbogage.
+Visual Studio utilise `Dockerfile.debug` pour g√©n√©rer les images de conteneur, acc√©l√©rant ainsi le d√©bogage.
 
-**Lien utile** : [Personnalisation des conteneurs pour le dÈbogage](https://aka.ms/customizecontainer)
-
----
+**Lien utile** : [Personnalisation des conteneurs pour le d√©bogage](https://aka.ms/customizecontainer)
 
 ## Utilisation de l'image Docker depuis Docker Hub
 
@@ -67,7 +63,7 @@ docker run --rm -it -p 8000:8081 -e ASPNETCORE_ENVIRONMENT=Development \
     -e ASPNETCORE_HTTP_PORTS=8081 zaelyndra/microserviceapitemplate:latest
 ```
 
-Pour exÈcuter une version spÈcifique, remplacez `latest` par le tag correspondant :
+Pour ex√©cuter une version sp√©cifique, remplacez `latest` par le tag correspondant :
 
 ```sh
 docker run --rm -it -p 8000:8081 -e ASPNETCORE_ENVIRONMENT=Development \
@@ -76,13 +72,11 @@ docker run --rm -it -p 8000:8081 -e ASPNETCORE_ENVIRONMENT=Development \
 
 **Liste des tags disponibles** : [Docker Hub du projet](https://hub.docker.com/repository/docker/zaelyndra/microserviceapitemplate/general)
 
----
-
 ## Utilisation du Template .NET
 
-### Installation du modËle
+### Installation du mod√®le
 
-¿ la racine du projet, exÈcutez :
+√Ä la racine du projet, ex√©cutez :
 
 - **Windows**
   ```sh
@@ -93,7 +87,7 @@ docker run --rm -it -p 8000:8081 -e ASPNETCORE_ENVIRONMENT=Development \
   dotnet new install ./
   ```
 
-### DÈsinstallation du modËle
+### D√©sinstallation du mod√®le
 
 - **Windows**
   ```sh
@@ -104,34 +98,32 @@ docker run --rm -it -p 8000:8081 -e ASPNETCORE_ENVIRONMENT=Development \
   dotnet new uninstall ./
   ```
 
-### CrÈation d'un projet ‡ partir du modËle
+### Cr√©ation d'un projet √† partir du mod√®le
 
-- **Afficher l'aide sur le modËle**
+- **Afficher l'aide sur le mod√®le**
   ```sh
   dotnet new microsapi -?
   ```
-- **GÈnÈrer un projet avec un nom personnalisÈ**
+- **G√©n√©rer un projet avec un nom personnalis√©**
   ```sh
   dotnet new microsapi -n {PROJECT_NAME}
   ```
-
----
 
 ## Workflows GitHub Actions
 
 ### Workflow "Create Release Tag"
 
-Ce workflow automatise la gestion des versions en crÈant des tags immuables conformes aux principes de Trunk Based Development. Il permet de :
+Ce workflow automatise la gestion des versions en cr√©ant des tags immuables conformes aux principes de Trunk Based Development. Il permet de :
 
-- Assurer un suivi structurÈ des modifications gr‚ce aux tags.
-- GÈnÈrer automatiquement des notes de release basÈes sur les commits.
+- Assurer un suivi structur√© des modifications gr√¢ce aux tags.
+- G√©n√©rer automatiquement des notes de release bas√©es sur les commits.
 
-**Principales Ètapes :**
-1. CrÈation d'un tag Git pour marquer la release.
-2. GÈnÈration des notes de release.
+**Principales √©tapes :**
+1. Cr√©ation d'un tag Git pour marquer la release.
+2. G√©n√©ration des notes de release.
 3. Publication automatique d'une release GitHub en mode brouillon.
 
-**DÈclenchement :**
+**D√©clenchement :**
 
 ```yaml
 on:
@@ -148,18 +140,16 @@ permissions:
     repository-projects: write
 ```
 
----
-
 ### Workflow "Publish Docker Image"
 
-Ce workflow automatise la construction et la publication de l'image Docker sur Docker Hub lors de la crÈation d'un tag de release.
+Ce workflow automatise la construction et la publication de l'image Docker sur Docker Hub lors de la cr√©ation d'un tag de release.
 
-**Principales Ètapes :**
-1. RÈcupÈration du code source.
-2. Construction de l'image Docker avec le tag appropriÈ.
+**Principales √©tapes :**
+1. R√©cup√©ration du code source.
+2. Construction de l'image Docker avec le tag appropri√©.
 3. Publication de l'image sur Docker Hub.
 
-**DÈclenchement :**
+**D√©clenchement :**
 
 ```yaml
 on:
@@ -173,19 +163,32 @@ on:
 docker pull zaelyndra/microserviceapitemplate:v1.0.0
 ```
 
----
-
 ## Liens Utiles
 
 **Docker et .NET**
 
 - [Construction d'images avec Visual Studio](https://learn.microsoft.com/fr-fr/visualstudio/containers/container-build?view=vs-2022)
 - [Exemples d'images Docker .NET](https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md)
-- [SÈcurisation HTTPS dans les conteneurs ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-9.0)
+- [S√©curisation HTTPS dans les conteneurs ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-9.0)
 
 **Templates .NET**
 
-- [CrÈer un modËle d'ÈlÈment .NET CLI](https://learn.microsoft.com/fr-fr/dotnet/core/tutorials/cli-templates-create-item-template)
-- [RÈfÈrence du fichier template.json](https://github.com/dotnet/templating/wiki/Reference-for-template.json)
-- [Contraintes des modËles .NET](https://github.com/dotnet/templating/wiki/Constraints)
-- [Personnalisation des modËles .NET CLI](https://learn.microsoft.com/fr-fr/dotnet/core/tools/custom-templates)
+- [Cr√©er un mod√®le d'√©l√©ment .NET CLI](https://learn.microsoft.com/fr-fr/dotnet/core/tutorials/cli-templates-create-item-template)
+- [R√©f√©rence du fichier template.json](https://github.com/dotnet/templating/wiki/Reference-for-template.json)
+- [Contraintes des mod√®les .NET](https://github.com/dotnet/templating/wiki/Constraints)
+- [Personnalisation des mod√®les .NET CLI](https://learn.microsoft.com/fr-fr/dotnet/core/tools/custom-templates)
+
+## Evolution Future
+
+Dans les prochaines versions, nous pr√©voyons d'ajouter le pattern "Unit of Work" pour g√©rer l'atomicit√© transactionnelle. Cette am√©lioration permettra de :
+
+- Assurer la coh√©rence des donn√©es lors de transactions complexes impliquant plusieurs op√©rations.
+- Simplifier la gestion des transactions en regroupant les op√©rations li√©es dans une seule unit√© de travail.
+- Am√©liorer la maintenabilit√© du code en centralisant la logique de persistance des donn√©es.
+
+Le pattern Unit of Work permet de suivre tous les changements effectu√©s sur la base de donn√©es pendant une transaction. Au lieu d'effectuer des op√©rations de base de donn√©es individuelles √† chaque modification, il conserve une liste des objets affect√©s par la transaction et coordonne l'√©criture des modifications et la r√©solution des probl√®mes de concurrence. Pour plus d'informations sur le pattern Unit of Work, consultez [Unit of Work par Martin Fowler](https://martinfowler.com/eaaCatalog/unitOfWork.html).
+
+L'impl√©mentation du pattern Unit of Work renforcera la robustesse de l'application en garantissant que toutes les op√©rations d'une transaction r√©ussissent ou √©chouent ensemble, pr√©servant ainsi l'int√©grit√© des donn√©es.
+
+Citations:
+[1] https://martinfowler.com/eaaCatalog/unitOfWork.html
