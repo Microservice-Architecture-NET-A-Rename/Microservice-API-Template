@@ -34,7 +34,7 @@ jobs:
            LATEST_TAG=$(git describe --tags --abbrev=0)
     
            # Récupérer l'avant-dernier tag (s'il existe)
-           PREVIOUS_TAG=$(git describe --tags --abbrev=0 $LATEST_TAG^)
+           PREVIOUS_TAG=$(git describe --tags --abbrev=0 $LATEST_TAG^ 2>/dev/null || echo "")
     
            echo "Latest tag $LATEST_TAG"
            echo "Previous tag $PREVIOUS_TAG"
