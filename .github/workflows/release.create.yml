@@ -30,27 +30,18 @@ jobs:
       - name: Generate Release Notes
         id: release_notes
         run: |    
-           # Récupérer le dernier tag (le plus récent)
-           LATEST_TAG=$(git describe --tags --abbrev=0)
-    
-           # Récupérer l'avant-dernier tag (s'il existe)
-           PREVIOUS_TAG=$(git describe --tags --abbrev=0 $LATEST_TAG^ 2>/dev/null || echo "")
-    
-           echo "Latest tag $LATEST_TAG"
-           echo "Previous tag $PREVIOUS_TAG"
+           TAG_COUNT=$(git tag -l "v*" | wc -l)
            
-           if [ -z "$PREVIOUS_TAG" ]; then
+           if [ "$TAG_COUNT" -ge 2 ]; then
+             npx conventional-changelog-cli -p angular -r 2 > release_notes.md
+           else
              echo "Pas de tag précédent trouvé. Génération depuis le début du projet."
              npx conventional-changelog-cli -p angular -r 0 > release_notes.md
-           else
-             echo "Génération entre $PREVIOUS_TAG et $LATEST_TAG"
-             npx conventional-changelog-cli -p angular -r 2 > release_notes.md
            fi
            
            echo "Contenu de release_notes.md:"
            cat release_notes.md
 
-          
            RELEASE_NOTES=$(cat release_notes.md)
            RELEASE_NOTES_JSON=$(echo "$RELEASE_NOTES" | jq -R -s '.')
            echo "RELEASE_NOTES=$RELEASE_NOTES_JSON" >> $GITHUB_OUTPUT
