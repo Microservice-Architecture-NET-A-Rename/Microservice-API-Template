@@ -93,7 +93,7 @@ Cette section détaille la procédure à suivre pour appliquer des correctifs su
     - Modifier **uniquement** ce qui est incompatible avec l'ancienne version
     - Conserver le même comportement fonctionnel que sur main
 
-5. **Validation et tagging**
+5. **Tagging**
     ```sh
     # Création des tags
     git tag -a v2.0.1 -m "Port du correctif #123 depuis main"
