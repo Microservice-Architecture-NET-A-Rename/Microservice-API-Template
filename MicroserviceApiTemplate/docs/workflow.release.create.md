@@ -95,9 +95,6 @@ Cette section détaille la procédure à suivre pour appliquer des correctifs su
 
 5. **Validation et tagging**
     ```sh
-    # Tests spécifiques à la version
-    npm run test:compatibility --version=2.0.0
-
     # Création des tags
     git tag -a v2.0.1 -m "Port du correctif #123 depuis main"
     git tag -a v4.0.1 -m "Port du correctif #123 depuis main"
